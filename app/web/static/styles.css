@@ -123,6 +123,7 @@ code { font-size: 12px; background: var(--neutral-wash); padding: 1px 5px; borde
 .login-form-panel {
   flex: 1; display: flex; align-items: center; justify-content: center;
   padding: 32px;
+  background: var(--surface);
 }
 .login-card { width: 360px; max-width: 100%; }
 .login-card h1 { margin: 0 0 4px; font-size: 24px; }

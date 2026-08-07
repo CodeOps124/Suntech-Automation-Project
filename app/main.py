@@ -82,6 +82,13 @@ def health():
     return {"status": "ok", "app": settings.app_name, "version": __version__}
 
 
+@app.get(settings.api_v1_prefix + "/meta", tags=["meta"])
+def meta():
+    """Public facts the sign in page needs before anyone has signed in.
+    Deliberately limited to the environment name and version."""
+    return {"environment": settings.app_env, "version": __version__}
+
+
 # ---- SunComply 145 web app (review dashboard, §15) --------------------------
 WEB_DIR = Path(__file__).parent / "web" / "static"
 app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")

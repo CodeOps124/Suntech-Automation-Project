@@ -902,6 +902,18 @@ if (localStorage.getItem("theme")) {
   document.documentElement.setAttribute("data-theme", localStorage.getItem("theme"));
 }
 
+// The pilot credentials panel is a development convenience. Hide it anywhere
+// other than a development environment so it never reaches a client.
+fetch(API + "/meta")
+  .then(r => r.ok ? r.json() : null)
+  .then(meta => {
+    if (meta && meta.environment !== "dev") {
+      const box = document.getElementById("login-demo-box");
+      if (box) box.remove();
+    }
+  })
+  .catch(() => { /* leave the panel as is if the check fails */ });
+
 window.addEventListener("hashchange", route);
 loadSession();
 route();
