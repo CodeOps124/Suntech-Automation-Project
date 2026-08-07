@@ -1,0 +1,68 @@
+[project]
+name = "suntech-form145"
+version = "0.1.0"
+description = "Suntech Business Solutions — CA-Firm Form 145/146 workflow automation platform"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Suntech Business Solutions" }]
+
+dependencies = [
+    # Web / API
+    "fastapi>=0.115,<0.116",
+    "uvicorn[standard]>=0.32,<0.33",
+    "python-multipart>=0.0.12",          # file uploads
+    "pydantic[email]>=2.9,<3",
+    "pydantic-settings>=2.6,<3",
+    # DB
+    "sqlalchemy>=2.0,<2.1",
+    "psycopg[binary]>=3.2,<4",
+    "alembic>=1.13,<2",
+    # Background jobs
+    "celery>=5.4,<6",
+    "redis>=5.2,<6",
+    # Object storage (S3-compatible — deliberately NOT the AWS SDK by name;
+    # boto3 speaks the S3 protocol against MinIO or any S3-compatible bucket)
+    "boto3>=1.35,<2",
+    # Auth / security
+    "bcrypt>=4.1,<6",
+    "python-jose[cryptography]>=3.3,<4",
+    # PDF generation (bank pack — later stage)
+    "reportlab>=4.2,<5",
+    # Misc
+    "httpx>=0.27,<1",
+    "structlog>=24.4,<25",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9",
+    "pytest-asyncio>=0.24,<1",
+    "ruff>=0.7,<1",
+    "mypy>=1.13,<2",
+    "faker>=30,<31",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]

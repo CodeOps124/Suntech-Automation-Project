@@ -1,0 +1,138 @@
+# Suntech Business Solutions — Form 145/146 Automation Platform
+# Local development stack. Everything runs offline: Postgres, Redis, MinIO
+# (S3-compatible), the FastAPI app, a Celery worker, and Celery beat.
+#
+#   docker compose up --build        # start everything
+#   docker compose run --rm api alembic upgrade head   # apply migrations
+#   docker compose run --rm api python -m scripts.seed # seed Suntech demo data
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-suntech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-suntech_dev_pw}
+      POSTGRES_DB: ${POSTGRES_DB:-suntech_form145}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-suntech} -d ${POSTGRES_DB:-suntech_form145}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minioadmin}
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # web console
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: create the bucket the app expects, then exit.
+  createbucket:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${S3_ACCESS_KEY:-minioadmin} ${S3_SECRET_KEY:-minioadmin} &&
+      mc mb --ignore-existing local/${S3_BUCKET:-suntech-documents} &&
+      echo 'bucket ready';
+      "
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      POSTGRES_HOST: db
+      # Normal app path: restricted role, RLS enforced (created in migration 0003).
+      DATABASE_URL: postgresql+psycopg://app_user:app_user_dev_pw@db:5432/${POSTGRES_DB:-suntech_form145}
+      # Migrations / seed / admin bootstrap: owner role, bypasses RLS.
+      PRIVILEGED_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-suntech}:${POSTGRES_PASSWORD:-suntech_dev_pw}@db:5432/${POSTGRES_DB:-suntech_form145}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      S3_ENDPOINT_URL: http://minio:9000
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: celery -A app.workers.celery_app.celery_app worker --loglevel=info
+    environment:
+      POSTGRES_HOST: db
+      DATABASE_URL: postgresql+psycopg://app_user:app_user_dev_pw@db:5432/${POSTGRES_DB:-suntech_form145}
+      PRIVILEGED_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-suntech}:${POSTGRES_PASSWORD:-suntech_dev_pw}@db:5432/${POSTGRES_DB:-suntech_form145}
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      S3_ENDPOINT_URL: http://minio:9000
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  beat:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: celery -A app.workers.celery_app.celery_app beat --loglevel=info
+    environment:
+      POSTGRES_HOST: db
+      DATABASE_URL: postgresql+psycopg://app_user:app_user_dev_pw@db:5432/${POSTGRES_DB:-suntech_form145}
+      PRIVILEGED_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-suntech}:${POSTGRES_PASSWORD:-suntech_dev_pw}@db:5432/${POSTGRES_DB:-suntech_form145}
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  minio-data:

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SunComply 145 — Automation Demo · Suntech Business Solutions</title>
+<link rel="stylesheet" href="css/demo.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23c9a227'/><text x='50' y='66' font-size='52' text-anchor='middle' fill='%23101d33' font-family='sans-serif' font-weight='bold'>S</text></svg>">
+</head>
+<body>
+<div id="shell">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">S</div>
+      <div>
+        <div class="brand-name">Sun<span>Comply</span> 145</div>
+        <div class="brand-sub">Suntech Business Solutions</div>
+      </div>
+    </div>
+
+    <nav id="nav">
+      <a href="#automation" data-view="automation" class="active"><span class="nav-ic">▶</span> Live Automation</a>
+      <a href="#dashboard" data-view="dashboard"><span class="nav-ic">▦</span> Dashboard</a>
+      <a href="#cases" data-view="cases"><span class="nav-ic">▤</span> Cases</a>
+    </nav>
+
+    <div class="demo-badge">
+      <div class="db-dot"></div> PRODUCT DEMO
+      <div class="db-sub">Simulated data · no live connection</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="playbar">
+        <button id="pb-restart" title="Restart">⟲</button>
+        <button id="pb-play" title="Play / pause">⏸</button>
+        <select id="pb-speed" title="Speed">
+          <option value="1">1×</option>
+          <option value="1.6" selected>1.6×</option>
+          <option value="2.5">2.5×</option>
+        </select>
+      </div>
+      <button id="theme-toggle" class="link-btn">◐ theme</button>
+      <div class="side-note">Workflow support only.<br>CA certification stays human.</div>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section id="view-automation" class="view"></section>
+    <section id="view-dashboard" class="view hidden"></section>
+    <section id="view-cases" class="view hidden"></section>
+  </main>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

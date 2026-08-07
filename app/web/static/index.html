@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SunComply 145 | Suntech Business Solutions</title>
+<link rel="stylesheet" href="/static/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23c9a227'/><text x='50' y='66' font-size='52' text-anchor='middle' fill='%23101d33' font-family='sans-serif' font-weight='bold'>S</text></svg>">
+</head>
+<body>
+
+<!-- ============ Sign in ============ -->
+<div id="login-screen" class="hidden">
+  <div class="login-brand-panel">
+    <div class="login-brand-inner">
+      <div class="brand">
+        <div class="brand-mark lg">S</div>
+        <div>
+          <div class="brand-name xl">Sun<span>Comply</span> 145</div>
+          <div class="brand-sub">Suntech Business Solutions</div>
+        </div>
+      </div>
+      <h2 class="login-headline">Remittance compliance, handled end to end.</h2>
+      <p class="login-copy">Upload the invoice. The platform extracts the data, classifies
+      the tax path under the current rule set, chases missing documents and prepares the
+      review pack. Your CA certifies. The bank pack is ready the same day.</p>
+      <ul class="login-points">
+        <li>Deterministic Part A to D classification, every decision versioned</li>
+        <li>Complete audit trail on every case</li>
+        <li>CA certification always stays with the CA</li>
+      </ul>
+    </div>
+    <div class="login-foot">One platform for Form 145 and Form 146 workflow.</div>
+  </div>
+
+  <div class="login-form-panel">
+    <form id="login-form" class="login-card" autocomplete="on">
+      <h1>Sign in</h1>
+      <p class="muted">Use your firm workspace credentials.</p>
+      <label class="fld-label" for="login-email">Email</label>
+      <input id="login-email" class="fld" type="email" required autocomplete="username" placeholder="you@yourfirm.com">
+      <label class="fld-label mt" for="login-password">Password</label>
+      <input id="login-password" class="fld" type="password" required autocomplete="current-password" placeholder="Password">
+      <div id="login-error" class="error-text hidden"></div>
+      <button id="login-btn" class="btn btn-primary login-submit" type="submit">Sign in</button>
+      <div class="login-demo-box">
+        <b>Pilot workspace</b>
+        <div>admin@suntech.example</div>
+        <div>priya@suntech.example</div>
+        <div>ramesh@suntech.example (CA reviewer)</div>
+        <div class="muted">Password: suntech123</div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ Application shell ============ -->
+<div id="app-shell" class="hidden">
+  <header id="topbar">
+    <div class="brand compact">
+      <div class="brand-mark sm">S</div>
+      <div class="brand-name">Sun<span>Comply</span> 145</div>
+    </div>
+    <div id="topbar-title" class="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <span id="topbar-firm" class="firm-chip"></span>
+      <div id="user-menu" class="user-menu">
+        <button id="user-menu-btn" class="avatar-btn" type="button">
+          <span id="user-avatar" class="avatar">SU</span>
+        </button>
+        <div id="user-dropdown" class="user-dropdown hidden">
+          <div class="ud-name" id="ud-name"></div>
+          <div class="ud-mail" id="ud-mail"></div>
+          <div class="ud-role" id="ud-role"></div>
+          <hr>
+          <a href="#/settings">Settings</a>
+          <button id="btn-signout" type="button">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell-body">
+    <aside id="sidebar">
+      <nav id="nav">
+        <a href="#/dashboard" data-view="dashboard"><span class="nav-ic">▦</span> Dashboard</a>
+        <a href="#/invoices" data-view="invoices"><span class="nav-ic">▥</span> E-Invoices</a>
+        <a href="#/cases" data-view="cases"><span class="nav-ic">▤</span> Cases</a>
+        <a href="#/new" data-view="new"><span class="nav-ic">＋</span> New Remittance</a>
+        <a href="#/directory" data-view="directory"><span class="nav-ic">◫</span> Clients and Vendors</a>
+        <a href="#/demo" data-view="demo"><span class="nav-ic">▶</span> Live Demo</a>
+        <a href="#/settings" data-view="settings"><span class="nav-ic">⚙</span> Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="side-note">Workflow support only.<br>CA certification stays human.</div>
+        <div class="side-version" id="side-version"></div>
+      </div>
+    </aside>
+
+    <main id="main"><div id="view"></div></main>
+  </div>
+</div>
+
+<!-- Certify modal -->
+<div id="certify-overlay" class="overlay hidden">
+  <div class="modal">
+    <h3>CA Certification</h3>
+    <p class="muted">This records the human certification step. It is never performed by
+    automation. Both references are required.</p>
+    <label class="fld-label" for="dsc-input">DSC reference</label>
+    <input id="dsc-input" class="fld" placeholder="For example DSC-2026-0142">
+    <label class="fld-label mt" for="udin-input">UDIN</label>
+    <input id="udin-input" class="fld" placeholder="18 digit UDIN">
+    <div class="muted mt">Certifying as <b id="certify-actor"></b></div>
+    <div id="certify-error" class="error-text hidden"></div>
+    <div class="modal-actions">
+      <button id="btn-certify-confirm" class="btn btn-primary grow">Certify with DSC and UDIN</button>
+      <button id="btn-certify-cancel" class="btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-rack"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

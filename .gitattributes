@@ -1,0 +1,8 @@
+# Normalise line endings so the repository stays consistent across machines.
+* text=auto eol=lf
+
+# Binary files must never be converted.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.ico binary
